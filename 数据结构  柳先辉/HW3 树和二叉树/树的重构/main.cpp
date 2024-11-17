@@ -1,107 +1,139 @@
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <vector>
-#include <unordered_map>
-#include <unordered_set>
 using namespace std;
  
-class TreeNode {
-public:
+struct Treenode {
     int val;
-    vector<TreeNode*> children;
- 
-    TreeNode(int _val) {
-        val = _val;
-    }
+    vector<Treenode*> child;  //存放原始子节点
+    Treenode* dad;  //存放原始父节点
+    Treenode(int x) : val(x), child(), dad(nullptr) {};
 };
- 
-class Solution {
-public:
-    // 查找多叉树中两个节点的最近公共祖先
-    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-        if (root == nullptr || root == p || root == q) {
-            return root;
+struct Treenode_new {
+    int val;
+    Treenode_new* left;
+    Treenode_new* right;
+    Treenode_new(int x) : val(x), left(nullptr), right(nullptr) {};
+};
+Treenode* buildtree(string tree, vector<Treenode*>&nodes)
+{
+    nodes.clear();
+    int node_total = 0;
+    Treenode* root = new Treenode(0);
+    nodes.push_back(root);
+    Treenode* current = nullptr;
+    Treenode* current_dad = root;
+    //dudduduudu
+    for (int i = 0; i < tree.size(); ++i)
+    {
+        if (tree[i] == 'd')
+        {
+            ++node_total;
+            current = new Treenode(node_total);
+            nodes.push_back(current);
+            current_dad->child.push_back(current);
+            current->dad = current_dad;
+            current_dad = current;
         }
- 
-        int count = 0;
-        TreeNode* temp = nullptr;
- 
-        // 遍历所有子节点，递归查找
-        for (auto child : root->children) {
-            TreeNode* res = lowestCommonAncestor(child, p, q);
-            if (res != nullptr) {
-                count++;
-                temp = res;
+        if (tree[i] == 'u')
+        {
+            if (current != nullptr)
+            {
+                current_dad = current->dad;
+                current = current_dad;
             }
         }
- 
-        // 如果有两个或以上子节点返回了非空值，说明当前节点是最近公共祖先
-        if (count > 1) {
-            return root;
-        }
- 
-        return temp;
     }
-};
- 
-// 辅助函数：将输入数据构建成树结构
-TreeNode* buildTree(int N, vector<pair<int, int>>& edges, unordered_map<int, TreeNode*>& nodeMap) {
-    unordered_set<int> childSet;
- 
-    for (int i = 1; i <= N; ++i) {
-        nodeMap[i] = new TreeNode(i);
-    }
- 
-    for (const auto& edge : edges) {
-        int parent = edge.first;
-        int child = edge.second;
-        nodeMap[parent]->children.push_back(nodeMap[child]);
-        childSet.insert(child);
-    }
- 
-    // 找到根节点（未在 childSet 中出现的节点）
-    int rootVal = -1;
-    for (int i = 1; i <= N; ++i) {
-        if (childSet.find(i) == childSet.end()) {
-            rootVal = i;
-            break;
-        }
-    }
- 
-    return nodeMap[rootVal];
+    return root;
 }
- 
-int main() {
-    int T;
-    cin >> T;
- 
-    while (T--) {
-        int N, M;
-        cin >> N >> M;
- 
-        vector<pair<int, int>> edges(N - 1);
-        unordered_map<int, TreeNode*> nodeMap;
- 
-        for (int i = 0; i < N - 1; ++i) {
-            cin >> edges[i].first >> edges[i].second;
-        }
- 
-        TreeNode* root = buildTree(N, edges, nodeMap);
-        Solution solution;
- 
-        for (int i = 0; i < M; ++i) {
-            int x, y;
-            cin >> x >> y;
- 
-            TreeNode* p = nodeMap[x];
-            TreeNode* q = nodeMap[y];
- 
-            TreeNode* lca = solution.lowestCommonAncestor(root, p, q);
-            if (lca != nullptr) {
-                cout << lca->val << endl;
-            }
-        }
+int findbrother(Treenode* node)
+{
+    if (node == nullptr || node->dad == nullptr)
+        return -1;
+    if (node->dad->child.size() < 2)
+        return -1;
+    else
+    {
+        for (int i = 0; i < node->dad->child.size(); ++i)
+            if ((node == node->dad->child[i]) && (node->dad->child.size() > i + 1))
+                return i + 1;
     }
- 
+    return -1;
+}
+Treenode_new* rebuildtree(Treenode* root, vector<Treenode*>&nodes)
+{
+    vector<Treenode_new*>nodes_n(nodes.size());
+    for (int i = 0; i < nodes.size(); ++i)
+    {
+        nodes_n[i] = new Treenode_new(nodes[i]->val);
+    }
+    for (int i = 0; i < nodes.size(); ++i)
+    {
+        if (!nodes[i]->child.empty())
+            nodes_n[i]->left = nodes_n[nodes[i]->child[0]->val];
+        if (findbrother(nodes[i]) > 0)
+            nodes_n[i]->right = nodes_n[nodes[i]->dad->child[findbrother(nodes[i])]->val];
+    }
+    return nodes_n[0];
+}
+int maxDepth(Treenode_new* root)
+{
+    if (root == nullptr)
+        return 0;
+    return max(maxDepth(root->left), maxDepth(root->right)) + 1;
+}
+// 递归释放原始树节点的内存
+void deleteTree(Treenode* root) {
+    if (root == nullptr)
+        return;
+    for (Treenode* child : root->child) {
+        deleteTree(child);
+    }
+    delete root;
+}
+// 递归释放新树节点的内存
+void deleteTreeNew(Treenode_new* root) {
+    if (root == nullptr)
+        return;
+    deleteTreeNew(root->left);
+    deleteTreeNew(root->right);
+    delete root;
+}
+int main()
+{
+    vector<Treenode*>nodes;
+    int count = 0;
+    while (true)
+    {
+        string tree;
+        getline(cin, tree);
+        if (tree == "#")
+            break;
+        count++;
+        int depth_current = 0;
+        int depth = 0;
+        int depth_new = 0;
+        for (char x : tree)
+        {
+            if (x == 'd')
+            {
+                ++depth_current;
+                if (depth_current > depth)
+                    depth = depth_current;
+            }
+            else
+                --depth_current;
+        }
+        
+        Treenode* root=buildtree(tree, nodes);
+        //cout << "Tree " << count << ": " << depth << endl;
+        Treenode_new* root_n = rebuildtree(root, nodes);
+        depth_new = maxDepth(root_n) - 1;
+        cout << "Tree " << count << ": " << depth << " => " << depth_new << endl;
+        // 释放内存
+        deleteTree(root);
+        deleteTreeNew(root_n);
+    }
     return 0;
 }
-×
