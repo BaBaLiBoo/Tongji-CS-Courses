@@ -9,21 +9,21 @@
 using namespace std;
 double pi = std::acos(-1);
 
-// ¶¨ÒåÒ»¸öÊ±ÖÓÀà
+// å®šä¹‰ä¸€ä¸ªæ—¶é’Ÿç±»
 class Clock {
 public:
-    void init();  // ³õÊ¼»¯Í¼ĞÎ½çÃæ
-    void drawClockFace();  // »æÖÆÖÓ±íÃæÅÌ
-    void drawHands(int hour, int minute, int second);  // »æÖÆÊ±Õë¡¢·ÖÕë¡¢ÃëÕë
-    void click(int x0, int y0, int size, COLORREF C);//Êó±êµã»÷°®ĞÄÌØĞ§
-    void startup(); //³õÊ¼»¯ĞÇĞÇ×ø±ê
-    void paintstar();//»æÖÆĞÇĞÇ
-    void moon();  //»æÖÆÔÂÁÁ
-    void meteor();  //»æÖÆÁ÷ĞÇ
-    COLORREF mix_color(COLORREF bg, COLORREF color, double alpha); // »ìºÏÑÕÉ«º¯Êı
-    void SDF_circle(POINT p, COLORREF color, int r); // ¿¹¾â³İ:»æÖÆSDFÔ²ĞÎ
-    void SDF_solidcircle(POINT p, COLORREF color, int r); // ¿¹¾â³İ:»æÖÆSDFÊµĞÄÔ²ĞÎ
-    void updateTime();  // ¸üĞÂËùÓĞ»æÖÆ
+    void init();  // åˆå§‹åŒ–å›¾å½¢ç•Œé¢
+    void drawClockFace();  // ç»˜åˆ¶é’Ÿè¡¨é¢ç›˜
+    void drawHands(int hour, int minute, int second);  // ç»˜åˆ¶æ—¶é’ˆã€åˆ†é’ˆã€ç§’é’ˆ
+    void click(int x0, int y0, int size, COLORREF C);//é¼ æ ‡ç‚¹å‡»çˆ±å¿ƒç‰¹æ•ˆ
+    void startup(); //åˆå§‹åŒ–æ˜Ÿæ˜Ÿåæ ‡
+    void paintstar();//ç»˜åˆ¶æ˜Ÿæ˜Ÿ
+    void moon();  //ç»˜åˆ¶æœˆäº®
+    void meteor();  //ç»˜åˆ¶æµæ˜Ÿ
+    COLORREF mix_color(COLORREF bg, COLORREF color, double alpha); // æ··åˆé¢œè‰²å‡½æ•°
+    void SDF_circle(POINT p, COLORREF color, int r); // æŠ—é”¯é½¿:ç»˜åˆ¶SDFåœ†å½¢
+    void SDF_solidcircle(POINT p, COLORREF color, int r); // æŠ—é”¯é½¿:ç»˜åˆ¶SDFå®å¿ƒåœ†å½¢
+    void updateTime();  // æ›´æ–°æ‰€æœ‰ç»˜åˆ¶
     struct STAR
     {
         int x;
@@ -32,27 +32,27 @@ public:
     STAR star[100];
 }; 
 
-//³õÊ¼»¯Í¼ĞÎ½çÃæ
+//åˆå§‹åŒ–å›¾å½¢ç•Œé¢
 void Clock::init()
 {
     initgraph(640, 720);
-    // ³õÊ¼»­Ãæ
+    // åˆå§‹ç”»é¢
     for (int i = 0; i < 500; i += 30)
     {
-        SDF_solidcircle({ 320,360 }, RGB(23, 21, 59), i); // »æÖÆ¿¹¾â³İÊµĞÄÔ²
+        SDF_solidcircle({ 320,360 }, RGB(23, 21, 59), i); // ç»˜åˆ¶æŠ—é”¯é½¿å®å¿ƒåœ†
     }
     setbkcolor(RGB(23, 21, 59)); 
-    BeginBatchDraw();  // ¿ªÆôË«»º³å»æÍ¼
+    BeginBatchDraw();  // å¼€å¯åŒç¼“å†²ç»˜å›¾
     cleardevice(); 
 }
-// »æÖÆÊ±ÖÓÃæÅÌ
+// ç»˜åˆ¶æ—¶é’Ÿé¢ç›˜
 void Clock::drawClockFace() 
 {
-    SDF_circle({ 320, 360 }, RGB(200, 172, 214), 220);  // Ê¹ÓÃSDF + Alpha Blending »æÖÆÃæÅÌ
+    SDF_circle({ 320, 360 }, RGB(200, 172, 214), 220);  // ä½¿ç”¨SDF + Alpha Blending ç»˜åˆ¶é¢ç›˜
     for (int i = 0; i < 12; ++i) 
     {
-        double angle = (i + 1) * 30 * pi / 180;  // Ã¿¸öĞ¡Ê±µÄ½Ç¶È
-        int x = 320 + 200 * sin(angle);  // ¼ÆËãÊı×ÖµÄ×ø±ê
+        double angle = (i + 1) * 30 * pi / 180;  // æ¯ä¸ªå°æ—¶çš„è§’åº¦
+        int x = 320 + 200 * sin(angle);  // è®¡ç®—æ•°å­—çš„åæ ‡
         int y = 360 - 200 * cos(angle);
         
         if (i == 11 || i == 2 || i == 5 || i == 8)
@@ -60,34 +60,34 @@ void Clock::drawClockFace()
         else
             SDF_circle({ x,y }, RGB(142, 124, 195), 2);
 
-        settextstyle(20, 0, _T("¿¬Ìå"));
+        settextstyle(20, 0, _T("æ¥·ä½“"));
         setcolor(RGB(209, 220, 243));
-        outtextxy(130, 650, _T("ºÚÒ¹¸øÁËÎÒºÚÉ«µÄÑÛ¾¦£¬ÎÒÈ´ÓÃËüÑ°ÕÒ¹âÃ÷¡£"));
-        outtextxy(500, 680, _T("¡ª¡ª¹Ë³Ç"));
+        outtextxy(130, 650, _T("é»‘å¤œç»™äº†æˆ‘é»‘è‰²çš„çœ¼ç›ï¼Œæˆ‘å´ç”¨å®ƒå¯»æ‰¾å…‰æ˜ã€‚"));
+        outtextxy(500, 680, _T("â€”â€”é¡¾åŸ"));
     }
 }
-// »æÖÆÊ±Õë¡¢·ÖÕë¡¢ÃëÕë
+// ç»˜åˆ¶æ—¶é’ˆã€åˆ†é’ˆã€ç§’é’ˆ
 void Clock::drawHands(int hour, int minute, int second) {
-    // ¼ÆËãÊ±Õë¡¢·ÖÕë¡¢ÃëÕëµÄ½Ç¶È
+    // è®¡ç®—æ—¶é’ˆã€åˆ†é’ˆã€ç§’é’ˆçš„è§’åº¦
     double hourAngle = (hour % 12 + minute / 60.0) * 30; 
     double minuteAngle = minute * 6;  
     double secondAngle = second * 6; 
-    // »æÖÆÃëÕë£ºÓÃÊµĞÄÔ²µÄ´óĞ¡±íÊ¾ÃëÊı
+    // ç»˜åˆ¶ç§’é’ˆï¼šç”¨å®å¿ƒåœ†çš„å¤§å°è¡¨ç¤ºç§’æ•°
     SDF_solidcircle({ 320, 360 }, RGB(209, 194, 243), second / 60.0 * 220);
     
-    // »æÖÆÊ±Õë
+    // ç»˜åˆ¶æ—¶é’ˆ
     for (int i = 0; i < 10; ++i)
     {
         SDF_solidcircle({ int(320 + i * 12 * sin(pi / 180 * hourAngle)), int(360 - i * 12 * cos(pi / 180 * hourAngle)) }, RGB(99, 64, 152), 2);
     }
-    // »æÖÆ·ÖÕë
+    // ç»˜åˆ¶åˆ†é’ˆ
     for (int i = 0; i < 15; ++i)
     {
         SDF_solidcircle({ int(320+i * 10 * sin(pi / 180 * minuteAngle)), int(360 - i * 10 * cos(pi / 180 * minuteAngle)) }, RGB(142, 124, 195), 1);
     }
 
 }
-//Êó±êµã»÷°®ĞÄÌØĞ§
+//é¼ æ ‡ç‚¹å‡»çˆ±å¿ƒç‰¹æ•ˆ
 void Clock::click(int x0, int y0, int size, COLORREF C)
 {
     double  m, n;
@@ -98,17 +98,17 @@ void Clock::click(int x0, int y0, int size, COLORREF C)
     int tempy = y;
     for (i = 0; i <= 2 * size; i = i + 0.01)
     {
-        //²úÉú¼«×ø±êµã
+        //äº§ç”Ÿæåæ ‡ç‚¹
         m = i;
         n = -size * (((sin(i) * sqrt(fabs(cos(i)))) / (sin(i) + 1.4142)) - 2 * sin(i) + 2);
-        //×ª»»ÎªµÑ¿¨¶û×ø±ê
+        //è½¬æ¢ä¸ºç¬›å¡å°”åæ ‡
         x = n * cos(m) + x0;
         y = n * sin(m) + y0;
         putpixel(x , y , C);
         putpixel(x + 1, y + 1, C);
     }
 }
-//³õÊ¼»¯ĞÇĞÇ×ø±ê
+//åˆå§‹åŒ–æ˜Ÿæ˜Ÿåæ ‡
 void Clock::startup()
 {
     for (int i = 0; i < 50; i++)
@@ -117,7 +117,7 @@ void Clock::startup()
         star[i].y = rand() % 720;
     }
 }
-//»æÖÆĞÇĞÇ
+//ç»˜åˆ¶æ˜Ÿæ˜Ÿ
 void Clock::paintstar()
 {
     for (int i = 0; i < 50; i++)
@@ -126,7 +126,7 @@ void Clock::paintstar()
     }
 
 }
-//»æÖÆÔÂÁÁ
+//ç»˜åˆ¶æœˆäº®
 void Clock::moon()
 {
     setcolor(WHITE);
@@ -135,7 +135,7 @@ void Clock::moon()
     SDF_solidcircle({ 150,60 }, RGB(23, 21, 59), 50);
 
 }
-//»æÖÆÁ÷ĞÇ
+//ç»˜åˆ¶æµæ˜Ÿ
 void Clock::meteor()
 {
     int a1 = rand() % 640;
@@ -151,7 +151,7 @@ void Clock::meteor()
     }
 
 }
-// »ìºÏÑÕÉ«º¯Êı
+// æ··åˆé¢œè‰²å‡½æ•°
 COLORREF  Clock::mix_color(COLORREF bg, COLORREF color, double alpha) {
     COLORREF result;
     result = RGB(GetRValue(bg) * (1 - alpha) + GetRValue(color) * alpha,
@@ -159,29 +159,29 @@ COLORREF  Clock::mix_color(COLORREF bg, COLORREF color, double alpha) {
         GetBValue(bg) * (1 - alpha) + GetBValue(color) * alpha);
     return result;
 }
-// ¿¹¾â³İ:»æÖÆSDFÔ²ĞÎ
+// æŠ—é”¯é½¿:ç»˜åˆ¶SDFåœ†å½¢
 void  Clock::SDF_circle(POINT p, COLORREF color, int r) {
     for (int i = p.x - r - 10; i < p.x + r + 10; i++) {
         for (int j = p.y - r - 10; j < p.y + r + 10; j++) {
             POINT p1 = { i, j };
-            double d = sqrt(pow(p1.x - p.x, 2) + pow(p1.y - p.y, 2)) - r;  // ¼ÆËã¾àÀë
-            double alpha = 1 - abs(d) / 4;  // ¼ÆËãÍ¸Ã÷¶È
+            double d = sqrt(pow(p1.x - p.x, 2) + pow(p1.y - p.y, 2)) - r;  // è®¡ç®—è·ç¦»
+            double alpha = 1 - abs(d) / 4;  // è®¡ç®—é€æ˜åº¦
 
             if (alpha >= 0 && alpha <= 1) {
-                COLORREF bg = getpixel(i, j);  // »ñÈ¡±³¾°ÑÕÉ«
-                COLORREF result = mix_color(bg, color, alpha);  // ½øĞĞÑÕÉ«»ìºÏ
-                putpixel(i, j, result);  // »æÖÆÏñËØ
+                COLORREF bg = getpixel(i, j);  // è·å–èƒŒæ™¯é¢œè‰²
+                COLORREF result = mix_color(bg, color, alpha);  // è¿›è¡Œé¢œè‰²æ··åˆ
+                putpixel(i, j, result);  // ç»˜åˆ¶åƒç´ 
             }
         }
     }
 }
-// ¿¹¾â³İ:»æÖÆSDFÊµĞÄÔ²ĞÎ
+// æŠ—é”¯é½¿:ç»˜åˆ¶SDFå®å¿ƒåœ†å½¢
 void  Clock::SDF_solidcircle(POINT p, COLORREF color, int r) {
     for (int i = p.x - r - 10; i < p.x + r + 10; i++) {
         for (int j = p.y - r - 10; j < p.y + r + 10; j++) {
             POINT p1 = { i, j };
-            double d = sqrt(pow(p1.x - p.x, 2) + pow(p1.y - p.y, 2)) - r;  // ¼ÆËã¾àÀë
-            double alpha = 1 - abs(d) / 3;  // ¼ÆËãÍ¸Ã÷¶È
+            double d = sqrt(pow(p1.x - p.x, 2) + pow(p1.y - p.y, 2)) - r;  // è®¡ç®—è·ç¦»
+            double alpha = 1 - abs(d) / 3;  // è®¡ç®—é€æ˜åº¦
 
             if (d < 0)
             {
@@ -189,14 +189,14 @@ void  Clock::SDF_solidcircle(POINT p, COLORREF color, int r) {
                 continue;
             }
             if (alpha >= 0 && alpha <= 1) {
-                COLORREF bg = getpixel(i, j);  // »ñÈ¡±³¾°ÑÕÉ«
-                COLORREF result = mix_color(bg, color, alpha);  // ½øĞĞÑÕÉ«»ìºÏ
-                putpixel(i, j, result);  // »æÖÆÏñËØ
+                COLORREF bg = getpixel(i, j);  // è·å–èƒŒæ™¯é¢œè‰²
+                COLORREF result = mix_color(bg, color, alpha);  // è¿›è¡Œé¢œè‰²æ··åˆ
+                putpixel(i, j, result);  // ç»˜åˆ¶åƒç´ 
             }
         }
     }
 }
-// ¸üĞÂËùÓĞ»æÖÆ
+// æ›´æ–°æ‰€æœ‰ç»˜åˆ¶
 void Clock::updateTime() {
     ExMessage msg;
     int count = 0;
@@ -210,9 +210,9 @@ void Clock::updateTime() {
         int second = localTime->tm_sec;
         if (count > 100)
             count = 0;
-        while (peekmessage(&msg, EX_MOUSE)) // ·Ç×èÈû»ñÈ¡Êó±êÏûÏ¢
+        while (peekmessage(&msg, EX_MOUSE)) // éé˜»å¡è·å–é¼ æ ‡æ¶ˆæ¯
         {
-            if (msg.message == WM_LBUTTONDOWN) // ¹ıÂË³öÊó±ê×ó¼üµã»÷ÊÂ¼ş
+            if (msg.message == WM_LBUTTONDOWN) // è¿‡æ»¤å‡ºé¼ æ ‡å·¦é”®ç‚¹å‡»äº‹ä»¶
             {
                 int x = msg.x;
                 int y = msg.y;
@@ -221,9 +221,9 @@ void Clock::updateTime() {
                 timedisplay = !timedisplay;
             }
         }
-        cleardevice();  // Çå³ıÆÁÄ»
-        drawHands(hour, minute, second);  // »æÖÆÖ¸Õë
-        drawClockFace();  // ÖØĞÂ»æÖÆÃæÅÌ
+        cleardevice();  // æ¸…é™¤å±å¹•
+        drawHands(hour, minute, second);  // ç»˜åˆ¶æŒ‡é’ˆ
+        drawClockFace();  // é‡æ–°ç»˜åˆ¶é¢ç›˜
         if (timedisplay)
         {
             TCHAR num_hour[10];
@@ -234,12 +234,12 @@ void Clock::updateTime() {
             TCHAR num_minute[10];
             if (minute < 10)
                 _stprintf_s(num_minute, _T("%02d"), minute);  
-            else// Õı³£Êä³öĞ¡Ê±
+            else// æ­£å¸¸è¾“å‡ºå°æ—¶
                 _stprintf_s(num_minute, _T("%d"), minute);
             TCHAR middle[10];
             _stprintf_s(middle, _T("%s"), _T(":"));
             setcolor(RGB(209, 220, 243));
-            settextstyle(50, 0, _T("ËÎÌå")); 
+            settextstyle(50, 0, _T("å®‹ä½“")); 
             outtextxy(255, 50, num_hour);
             outtextxy(310, 50, middle);
             outtextxy(338, 50, num_minute);
@@ -251,23 +251,23 @@ void Clock::updateTime() {
         if (count % 30 == 0)
             meteor();
         count++;
-        FlushBatchDraw();  // Ë¢ĞÂÆÁÄ»ÏÔÊ¾
+        FlushBatchDraw();  // åˆ·æ–°å±å¹•æ˜¾ç¤º
     }
-    EndBatchDraw();  // ½áÊøË«»º³å»æÍ¼
+    EndBatchDraw();  // ç»“æŸåŒç¼“å†²ç»˜å›¾
 }
 
 int main() {
     
     Clock clock;
 
-    //²¥·ÅBGM
+    //æ’­æ”¾BGM
     mciSendString("open river_flows_in_you.mp3 alias bgm", 0, 0, 0);
     mciSendString("play bgm repeat", 0, 0, 0);
-    //³õÊ¼»¯½çÃæ
+    //åˆå§‹åŒ–ç•Œé¢
     clock.init();
-    //³õÊ¼»¯ĞÇĞÇ×ø±ê
+    //åˆå§‹åŒ–æ˜Ÿæ˜Ÿåæ ‡
     clock.startup();
-    //¸üĞÂÊ±¼äºÍËùÓĞ»æÖÆ
+    //æ›´æ–°æ—¶é—´å’Œæ‰€æœ‰ç»˜åˆ¶
     clock.updateTime();
 
     mciSendString("close music", nullptr, 0, nullptr);
