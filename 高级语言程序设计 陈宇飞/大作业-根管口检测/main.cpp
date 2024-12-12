@@ -34,7 +34,7 @@ int main()
     // 设置 OpenCV 日志等级为静默模式
     utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_SILENT);
     cout << "开始检测，请耐心等待" << endl;
-    Mat img = imread("");
+    Mat img = imread("tooth/test_img/30.1.png");
     Mat origin = img.clone();
     if (img.empty()) {
         cerr << "Error: Unable to open image!" << endl;
